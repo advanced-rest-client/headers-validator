@@ -1,0 +1,101 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../iron-test-helpers/test-helpers.js"></script>
+    <script src="../../iron-test-helpers/mock-interactions.js"></script>
+    <link rel="import" href="../headers-validator.html">
+  </head>
+  <body>
+
+    <test-fixture id="basic">
+      <template>
+        <headers-validator></headers-validator>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="payload">
+      <template>
+        <headers-validator is-payload></headers-validator>
+      </template>
+    </test-fixture>
+
+    <script>
+    /* global fixture, assert */
+    suite('basic', function() {
+      var element;
+      setup(function() {
+        element = fixture('basic');
+      });
+
+      test('invalid is undefined', function() {
+        assert.isUndefined(element.invalid);
+      });
+
+      test('errorMessage is undefined', function() {
+        assert.isUndefined(element.errorMessage);
+      });
+
+      test('invalid is false for valid headers', function() {
+        element.headers = 'x-test: x-value';
+        assert.isFalse(element.invalid);
+      });
+
+      test('invalid is true for invalid headers', function() {
+        element.headers = 'x-test:';
+        assert.isTrue(element.invalid);
+      });
+
+      test('errorMessage is set', function() {
+        element.headers = 'x-test:';
+        assert.typeOf(element.errorMessage, 'string');
+      });
+    });
+
+    suite('with payload', function() {
+      var element;
+      setup(function() {
+        element = fixture('payload');
+      });
+
+      test('invalid is true', function() {
+        assert.isTrue(element.invalid);
+      });
+
+      test('errorMessage is set', function() {
+        assert.typeOf(element.errorMessage, 'string');
+      });
+
+      test('invalid is false after adding headers', function() {
+        element.headers = 'x-test: x-value\nContent-Type:x-test';
+        assert.isFalse(element.invalid);
+      });
+
+      test('errorMessage is undefined after adding headers', function() {
+        element.headers = 'x-test: x-value\nContent-Type:x-test';
+        assert.isUndefined(element.errorMessage);
+      });
+
+      test('invalid is true for invalid headers', function() {
+        element.headers = 'x-test:\nContent-Type:x-test';
+        assert.isTrue(element.invalid);
+      });
+    });
+
+    </script>
+
+  </body>
+</html>
